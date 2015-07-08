@@ -1,10 +1,9 @@
 #!/usr/bin/python 
-#coding:utf-8
+#-*- coding:utf-8 -*-
 from HTMLParser import HTMLParser
 import urllib,os
-import sys
-reload(sys)
-sys.setdefaultencoding('gbk')
+import time
+import argparse
 
 (
     IMG,
@@ -84,24 +83,33 @@ def download(folder_path, html_code, durl, links_list):
 def parse_option():
     parser = argparse.ArgumentParser(description='Download page from remote web',)
     #抓取数据时间间隔
-    parser.add_argument('-d', dest='refresh_slot', action='store_true')
+    parser.add_argument('-d', dest='refresh_slot', type=int, default=60, help='reload webpage time slot')
     #url
-    parser.add_argument('-u', dest='url', action='store_true')
+    parser.add_argument('-u', dest='url', help='The web url')
     #保存的路径
-    parser.add_argument('-o', dest='directory', action='store_true')
+    parser.add_argument('-o', dest='out_folder_path', default='/tmp', help='The folder path of the download page located')
     return parser.parse_args()
 
 if __name__ == "__main__":
-#    option = parse_option()
-#    #修复所有
-#    flush_profile_inconsistence(option.dry_run)
-#    url = option.url
-#    refresh_slot = option.refresh_slot
-    url = 'http://m.sohu.com'
-    folder_path = '/tmp/hao'
-    html_code = urllib.urlopen(url).read()
-    hp = MyHTMLParser()
-    hp.feed(html_code)
-    hp.close()
-    durl = url.rsplit('/',1)[0]
-    download(folder_path, html_code, durl, hp.links_list)
+    option = parse_option()
+    url = option.url
+    refresh_slot = option.refresh_slot
+    out_folder_path = option.out_folder_path
+
+    if out_folder_path[-1]!='/':
+        out_folder_path += '/'
+    if not os.path.exists(local_path):
+        try:
+            os.mkdir(local_path)
+        except Exception,error:
+            print error
+#    url = 'http://m.sohu.com'
+    while 1:
+        folder_path = out_folder_path + time.strftime('%Y%m%d%H%M')
+        html_code = urllib.urlopen(url).read()
+        hp = MyHTMLParser()
+        hp.feed(html_code)
+        hp.close()
+        durl = url.rsplit('/',1)[0]
+        download(folder_path, html_code, durl, hp.links_list)
+        time.sleep(refresh_slot)

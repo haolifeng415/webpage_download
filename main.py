@@ -98,9 +98,9 @@ if __name__ == "__main__":
 
     if out_folder_path[-1]!='/':
         out_folder_path += '/'
-    if not os.path.exists(local_path):
+    if not os.path.exists(out_folder_path):
         try:
-            os.mkdir(local_path)
+            os.mkdir(out_folder_path)
         except Exception,error:
             print error
 #    url = 'http://m.sohu.com'
